@@ -10,13 +10,13 @@ LiteSuite is a collection of specialized utilities designed for Windows system a
 
 ## 📊 Project Status
 
-| Tool | Status | Build | Release | Issues |
-|------|--------|-------|---------|--------|
-| [LiteTask](https://github.com/svtica/LiteTask) | ✅ Production | [![Build](https://img.shields.io/github/actions/workflow/status/svtica/LiteTask/build-and-release.yml)](https://github.com/svtica/LiteTask/actions) | [![Release](https://img.shields.io/github/v/release/svtica/LiteTask)](https://github.com/svtica/LiteTask/releases/latest) | [![Issues](https://img.shields.io/github/issues/svtica/LiteTask)](https://github.com/svtica/LiteTask/issues) |
-| [LitePM](https://github.com/svtica/LitePM) | ✅ Production | [![Build](https://img.shields.io/github/actions/workflow/status/svtica/LitePM/build-and-release.yml)](https://github.com/svtica/LitePM/actions) | [![Release](https://img.shields.io/github/v/release/svtica/LitePM)](https://github.com/svtica/LitePM/releases/latest) | [![Issues](https://img.shields.io/github/issues/svtica/LitePM)](https://github.com/svtica/LitePM/issues) |
-| [LiteDeploy](https://github.com/svtica/LiteDeploy) | 🚧 WIP | [![Build](https://img.shields.io/github/actions/workflow/status/svtica/LiteDeploy/build-and-release.yml)](https://github.com/svtica/LiteDeploy/actions) | [![Release](https://img.shields.io/github/v/release/svtica/LiteDeploy)](https://github.com/svtica/LiteDeploy/releases/latest) | [![Issues](https://img.shields.io/github/issues/svtica/LiteDeploy)](https://github.com/svtica/LiteDeploy/issues) |
-| [LiteRun](https://github.com/svtica/LiteRun) | 🚧 WIP | [![Build](https://img.shields.io/github/actions/workflow/status/svtica/LiteRun/build-and-release.yml)](https://github.com/svtica/LiteRun/actions) | [![Release](https://img.shields.io/github/v/release/svtica/LiteRun)](https://github.com/svtica/LiteRun/releases/latest) | [![Issues](https://img.shields.io/github/issues/svtica/LiteRun)](https://github.com/svtica/LiteRun/issues) |
-| [LiteSrv](https://github.com/svtica/LiteSrv) | 🚧 WIP | [![Build](https://img.shields.io/github/actions/workflow/status/svtica/LiteSrv/build-and-release.yml)](https://github.com/svtica/LiteSrv/actions) | [![Release](https://img.shields.io/github/v/release/svtica/LiteSrv)](https://github.com/svtica/LiteSrv/releases/latest) | [![Issues](https://img.shields.io/github/issues/svtica/LiteSrv)](https://github.com/svtica/LiteSrv/issues) |
+| Tool | Status | Build | Release |
+|------|--------|-------|---------|
+| [LiteTask](https://github.com/svtica/LiteTask) | ✅ Production | [![Release](https://img.shields.io/github/v/release/svtica/LiteTask)](https://github.com/svtica/LiteTask/releases/latest) |
+| [LitePM](https://github.com/svtica/LitePM) | ✅ Production | [![Release](https://img.shields.io/github/v/release/svtica/LitePM)](https://github.com/svtica/LitePM/releases/latest) |
+| [LiteDeploy](https://github.com/svtica/LiteDeploy) | 🚧 WIP | [![Release](https://img.shields.io/github/v/release/svtica/LiteDeploy)](https://github.com/svtica/LiteDeploy/releases/latest) |
+| [LiteRun](https://github.com/svtica/LiteRun) | 🚧 WIP | [![Release](https://img.shields.io/github/v/release/svtica/LiteRun)](https://github.com/svtica/LiteRun/releases/latest) |
+| [LiteSrv](https://github.com/svtica/LiteSrv) | 🚧 WIP | [![Release](https://img.shields.io/github/v/release/svtica/LiteSrv)](https://github.com/svtica/LiteSrv/releases/latest) |
 
 ## 🛠️ Tools Overview
 
