@@ -10,8 +10,8 @@ LiteSuite is a collection of specialized utilities designed for Windows system a
 
 ## 📊 Project Status
 
-| Tool | Status | Build | Release |
-|------|--------|-------|---------|
+| Tool | Status | Release |
+|------|--------|---------|
 | [LiteTask](https://github.com/svtica/LiteTask) | ✅ Production | [![Release](https://img.shields.io/github/v/release/svtica/LiteTask)](https://github.com/svtica/LiteTask/releases/latest) |
 | [LitePM](https://github.com/svtica/LitePM) | ✅ Production | [![Release](https://img.shields.io/github/v/release/svtica/LitePM)](https://github.com/svtica/LitePM/releases/latest) |
 | [LiteDeploy](https://github.com/svtica/LiteDeploy) | 🚧 WIP | [![Release](https://img.shields.io/github/v/release/svtica/LiteDeploy)](https://github.com/svtica/LiteDeploy/releases/latest) |
