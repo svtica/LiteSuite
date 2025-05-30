@@ -1,0 +1,252 @@
+# .github/workflows/suite-release.yml
+# GitHub Actions workflow for LiteSuite (Complete Suite Release)
+
+name: Suite Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Suite version (e.g., 2.0.0)'
+        required: true
+        default: '2.0.0'
+
+jobs:
+  fetch-latest-releases:
+    runs-on: ubuntu-latest
+    outputs:
+      litetask-version: ${{ steps.versions.outputs.litetask }}
+      litepm-version: ${{ steps.versions.outputs.litepm }}
+      litedeploy-version: ${{ steps.versions.outputs.litedeploy }}
+      literun-version: ${{ steps.versions.outputs.literun }}
+      litesrv-version: ${{ steps.versions.outputs.litesrv }}
+      suite-version: ${{ steps.versions.outputs.suite }}
+      
+    steps:
+    - name: Get latest release versions
+      id: versions
+      run: |
+        # Set suite version
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          SUITE_VERSION="${{ github.event.inputs.version }}"
+        else
+          SUITE_VERSION="${GITHUB_REF#refs/tags/v}"
+        fi
+        echo "suite=$SUITE_VERSION" >> $GITHUB_OUTPUT
+        
+        # Get latest releases from each repository
+        # svtica's LiteSuite repositories
+        GITHUB_USER="svtica"
+        
+        # Function to get latest release
+        get_latest_release() {
+          local repo=$1
+          curl -s "https://api.github.com/repos/$GITHUB_USER/$repo/releases/latest" | \
+            grep '"tag_name":' | \
+            sed -E 's/.*"([^"]+)".*/\1/' || echo "v1.0.0"
+        }
+        
+        LITETASK_VERSION=$(get_latest_release "LiteTask")
+        LITEPM_VERSION=$(get_latest_release "LitePM")
+        LITEDEPLOY_VERSION=$(get_latest_release "LiteDeploy")
+        LITERUN_VERSION=$(get_latest_release "LiteRun")
+        LITESRV_VERSION=$(get_latest_release "LiteSrv")
+        
+        echo "litetask=$LITETASK_VERSION" >> $GITHUB_OUTPUT
+        echo "litepm=$LITEPM_VERSION" >> $GITHUB_OUTPUT
+        echo "litedeploy=$LITEDEPLOY_VERSION" >> $GITHUB_OUTPUT
+        echo "literun=$LITERUN_VERSION" >> $GITHUB_OUTPUT
+        echo "litesrv=$LITESRV_VERSION" >> $GITHUB_OUTPUT
+        
+        echo "Suite Version: $SUITE_VERSION"
+        echo "LiteTask: $LITETASK_VERSION"
+        echo "LitePM: $LITEPM_VERSION"
+        echo "LiteDeploy: $LITEDEPLOY_VERSION"
+        echo "LiteRun: $LITERUN_VERSION"
+        echo "LiteSrv: $LITESRV_VERSION"
+
+  download-releases:
+    needs: fetch-latest-releases
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Create suite directory structure
+      run: |
+        mkdir -p LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/{LiteTask,LitePM,LiteDeploy,LiteRun,LiteSrv}
+        
+    - name: Download LiteTask release
+      run: |
+        RELEASE_URL="https://api.github.com/repos/svtica/LiteTask/releases/tags/${{ needs.fetch-latest-releases.outputs.litetask-version }}"
+        DOWNLOAD_URL=$(curl -s $RELEASE_URL | grep "browser_download_url.*win-x64.zip" | cut -d '"' -f 4)
+        if [ -n "$DOWNLOAD_URL" ]; then
+          wget -O litetask.zip "$DOWNLOAD_URL"
+          unzip -d "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteTask/" litetask.zip
+        fi
+        
+    - name: Download LitePM release
+      run: |
+        RELEASE_URL="https://api.github.com/repos/svtica/LitePM/releases/tags/${{ needs.fetch-latest-releases.outputs.litepm-version }}"
+        DOWNLOAD_URL=$(curl -s $RELEASE_URL | grep "browser_download_url.*win.zip" | cut -d '"' -f 4)
+        if [ -n "$DOWNLOAD_URL" ]; then
+          wget -O litepm.zip "$DOWNLOAD_URL"
+          unzip -d "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LitePM/" litepm.zip
+        fi
+        
+    - name: Download LiteDeploy release
+      run: |
+        RELEASE_URL="https://api.github.com/repos/svtica/LiteDeploy/releases/tags/${{ needs.fetch-latest-releases.outputs.litedeploy-version }}"
+        DOWNLOAD_URL=$(curl -s $RELEASE_URL | grep "browser_download_url.*win.zip" | cut -d '"' -f 4)
+        if [ -n "$DOWNLOAD_URL" ]; then
+          wget -O litedeploy.zip "$DOWNLOAD_URL"
+          unzip -d "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteDeploy/" litedeploy.zip
+        fi
+        
+    - name: Download LiteRun releases
+      run: |
+        RELEASE_URL="https://api.github.com/repos/svtica/LiteRun/releases/tags/${{ needs.fetch-latest-releases.outputs.literun-version }}"
+        # Download both x64 and x86 versions
+        DOWNLOAD_URL_X64=$(curl -s $RELEASE_URL | grep "browser_download_url.*win-x64.zip" | cut -d '"' -f 4)
+        DOWNLOAD_URL_X86=$(curl -s $RELEASE_URL | grep "browser_download_url.*win-x86.zip" | cut -d '"' -f 4)
+        
+        mkdir -p "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteRun/x64"
+        mkdir -p "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteRun/x86"
+        
+        if [ -n "$DOWNLOAD_URL_X64" ]; then
+          wget -O literun-x64.zip "$DOWNLOAD_URL_X64"
+          unzip -d "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteRun/x64/" literun-x64.zip
+        fi
+        
+        if [ -n "$DOWNLOAD_URL_X86" ]; then
+          wget -O literun-x86.zip "$DOWNLOAD_URL_X86"
+          unzip -d "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteRun/x86/" literun-x86.zip
+        fi
+        
+    - name: Download LiteSrv releases
+      run: |
+        RELEASE_URL="https://api.github.com/repos/svtica/LiteSrv/releases/tags/${{ needs.fetch-latest-releases.outputs.litesrv-version }}"
+        # Download both x64 and x86 versions
+        DOWNLOAD_URL_X64=$(curl -s $RELEASE_URL | grep "browser_download_url.*win-x64.zip" | cut -d '"' -f 4)
+        DOWNLOAD_URL_X86=$(curl -s $RELEASE_URL | grep "browser_download_url.*win-x86.zip" | cut -d '"' -f 4)
+        
+        mkdir -p "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteSrv/x64"
+        mkdir -p "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteSrv/x86"
+        
+        if [ -n "$DOWNLOAD_URL_X64" ]; then
+          wget -O litesrv-x64.zip "$DOWNLOAD_URL_X64"
+          unzip -d "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteSrv/x64/" litesrv-x64.zip
+        fi
+        
+        if [ -n "$DOWNLOAD_URL_X86" ]; then
+          wget -O litesrv-x86.zip "$DOWNLOAD_URL_X86"
+          unzip -d "LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}/LiteSrv/x86/" litesrv-x86.zip
+        fi
+        
+    - name: Create suite documentation
+      run: |
+        SUITE_DIR="LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}"
+        
+        # Copy main README
+        cp README.md "$SUITE_DIR/"
+        cp LICENSE "$SUITE_DIR/"
+        
+        # Create version information file
+        cat > "$SUITE_DIR/VERSION.txt" << EOF
+        LiteSuite v${{ needs.fetch-latest-releases.outputs.suite-version }}
+        
+        Included Tools:
+        - LiteTask: ${{ needs.fetch-latest-releases.outputs.litetask-version }}
+        - LitePM: ${{ needs.fetch-latest-releases.outputs.litepm-version }}
+        - LiteDeploy: ${{ needs.fetch-latest-releases.outputs.litedeploy-version }}
+        - LiteRun: ${{ needs.fetch-latest-releases.outputs.literun-version }}
+        - LiteSrv: ${{ needs.fetch-latest-releases.outputs.litesrv-version }}
+        
+        Release Date: $(date)
+        Build: ${{ github.sha }}
+        EOF
+        
+        # Create installation guide
+        cat > "$SUITE_DIR/INSTALL.md" << EOF
+        # LiteSuite Installation Guide
+        
+        ## Quick Start
+        1. Extract this archive to your desired location
+        2. Add the tools to your PATH (optional):
+           - Add each tool directory to your PATH environment variable
+        3. Run individual tools as needed
+        
+        ## Individual Tools
+        - **LiteTask**: Windows Task Scheduler alternative
+        - **LitePM**: Process manager with advanced monitoring
+        - **LiteDeploy**: Remote deployment and management tool
+        - **LiteRun**: Remote command execution utility
+        - **LiteSrv**: Windows service wrapper
+        
+        ## System Requirements
+        - Windows 7 or later
+        - .NET 8.0 Runtime (for LiteTask)
+        - .NET Framework 4.7.2 (for LitePM, LiteDeploy)
+        - Visual C++ Redistributable (for LiteRun, LiteSrv)
+        
+        For detailed documentation, see the README.md in each tool's directory.
+        EOF
+        
+    - name: Create suite package
+      run: |
+        SUITE_DIR="LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}"
+        zip -r "$SUITE_DIR.zip" "$SUITE_DIR/"
+        echo "SUITE_PACKAGE=$SUITE_DIR.zip" >> $GITHUB_ENV
+        
+    - name: Upload suite artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: LiteSuite-${{ needs.fetch-latest-releases.outputs.suite-version }}
+        path: ${{ env.SUITE_PACKAGE }}
+        
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ needs.fetch-latest-releases.outputs.suite-version }}
+        release_name: LiteSuite v${{ needs.fetch-latest-releases.outputs.suite-version }}
+        body: |
+          # LiteSuite v${{ needs.fetch-latest-releases.outputs.suite-version }}
+          
+          Complete suite of Windows administration tools.
+          
+          ## Included Tools
+          - **LiteTask** ${{ needs.fetch-latest-releases.outputs.litetask-version }} - Task Scheduler Alternative
+          - **LitePM** ${{ needs.fetch-latest-releases.outputs.litepm-version }} - Process Manager
+          - **LiteDeploy** ${{ needs.fetch-latest-releases.outputs.litedeploy-version }} - Deployment Tool
+          - **LiteRun** ${{ needs.fetch-latest-releases.outputs.literun-version }} - Remote Execution
+          - **LiteSrv** ${{ needs.fetch-latest-releases.outputs.litesrv-version }} - Service Wrapper
+          
+          ## Installation
+          1. Download the suite package below
+          2. Extract to your desired location
+          3. See INSTALL.md for detailed setup instructions
+          
+          ## System Requirements
+          - Windows 7 or later
+          - .NET 8.0 Runtime + .NET Framework 4.7.2
+          - Visual C++ Redistributable
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ env.SUITE_PACKAGE }}
+        asset_name: ${{ env.SUITE_PACKAGE }}
+        asset_content_type: application/zip

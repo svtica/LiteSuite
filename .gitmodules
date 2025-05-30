@@ -1,0 +1,15 @@
+[submodule "LiteTask"]
+	path = LiteTask
+	url = https://github.com/svtica/LiteTask
+[submodule "LitePM"]
+	path = LitePM
+	url = https://github.com/svtica/LitePM
+[submodule "LiteDeploy"]
+	path = LiteDeploy
+	url = https://github.com/svtica/LiteDeploy
+[submodule "LiteRun"]
+	path = LiteRun
+	url = https://github.com/svtica/LiteRun
+[submodule "LiteSrv"]
+	path = LiteSrv
+	url = https://github.com/svtica/LiteSrv
